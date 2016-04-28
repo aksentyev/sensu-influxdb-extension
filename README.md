@@ -93,6 +93,18 @@ Check definitions can now specify a Sensu check extension to run,
 
 * tags hash is also pretty straight forward. Just list here in a flat-hash design as many influxdb tags you wish to be added in your measures.
 
+* `merge_measurements` should be used to merge values into the one measurements. Useful for aggregation in Influxdb 0.9. 
+Example:
+```
+server01.memory
+time	duration	host	type	value
+2016-04-28T17:26:40Z	0.125	"server01.node"	"total"	3945902080
+2016-04-28T17:26:40Z	0.125	"server01.node"	"freeWOBuffersCaches"	3329712128
+2016-04-28T17:26:40Z	0.125	"server01.node"	"swapUsed"	0
+2016-04-28T17:26:40Z	0.125	"server01.node"	"swapFree"	0
+
+```
+
 * `strip_metric` however might not be. This is used to "clean up" the data sent to influxdb. Normally everything sent to handlers is akin to the `graphite`/`stats` style:
 ```
   something.host.metrictype.foo.bar
