@@ -42,6 +42,13 @@ module Sensu::Extension
           values += ",duration=#{event['check']['duration'].to_f}"
         end
 
+        type = nil
+        if conf['merge_measurements']
+          key += 'total' if key[-1] == '.'
+          type = key[/^.*\.(.*)/, 1]
+          key = Regexp.new("^(.*)\.#{type}").match(key)[1]
+        end
+
         if conf['strip_metric'] == 'host'
           key = slice_host(key, host)
         elsif conf['strip_metric']
@@ -52,8 +59,11 @@ module Sensu::Extension
         # TODO : create a key_clean def to refactor this
         key.gsub!(',', '\,')
 
+
+
         # This will merge : default conf tags < check embedded tags < sensu client/host tag
         tags = conf.fetch(:tags, {}).merge(event['check']['influxdb']['tags']).merge({'host' => host})
+        tags.merge!(type: type) if type
         tags.each do |tag, val|
           key += ",#{tag}=#{val}"
         end
@@ -99,7 +109,8 @@ module Sensu::Extension
           'ssl_enable' => @settings['influxdb']['ssl_enable'],
           'strip_metric' => @settings['influxdb']['strip_metric'],
           'timeout' => @settings['influxdb']['timeout'],
-          'user' => @settings['influxdb']['user']
+          'user' => @settings['influxdb']['user'],
+          'merge_measurements' => @settings['influxdb']['merge_measurements']
         }
       rescue => e
         puts "Failed to parse InfluxDB settings #{e}"
