@@ -54,7 +54,7 @@ module Sensu::Extension
         end
 
         if conf['strip_metric']
-          regex = Regexp.new(/^.*#{conf['strip_metric']}(.*$)/)
+          regex = Regexp.new(/^#{conf['strip_metric']}(.*$)/)
           key = regex.match(key)[1]
         end
 
