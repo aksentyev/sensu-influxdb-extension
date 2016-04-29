@@ -54,9 +54,8 @@ module Sensu::Extension
         end
 
         if conf['strip_metric']
-          Array(conf['strip_metric']).each do |el|
-            key.gsub!(/^.*#{el}\.(.*$)/, '\1')
-          end
+          regex = Regexp.new(/^.*#{conf['strip_metric']}(.*$)/)
+          key = regex.match(key)[1]
         end
 
 
