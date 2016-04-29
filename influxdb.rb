@@ -49,11 +49,16 @@ module Sensu::Extension
           key = Regexp.new("^(.*)\.#{type}").match(key)[1]
         end
 
-        if conf['strip_metric'] == 'host'
+        if conf['strip_host']
           key = slice_host(key, host)
-        elsif conf['strip_metric']
-          key.gsub!(/^.*#{conf['strip_metric']}\.(.*$)/, '\1')
         end
+
+        if conf['strip_metric']
+          Array(conf['strip_metric']).each do |el|
+            key.gsub!(/^.*#{el}\.(.*$)/, '\1')
+          end
+        end
+
 
         # Avoid things break down due to comma in key name
         # TODO : create a key_clean def to refactor this
